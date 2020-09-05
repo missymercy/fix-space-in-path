@@ -11,9 +11,11 @@ class NameFix(object):
             max_filename_length: int
     ) -> None:
         self.root_directory = root_directory
-        exclude = [os.path.abspath(os.path.join(self.root_directory, entry)) for entry in exclude]
-        self.exclude_dirs = [entry for entry in exclude if os.path.isdir(entry)]
-        self.exclude_files = [entry for entry in exclude if os.path.isfile(entry)]
+        exclude = [os.path.join(self.root_directory, entry) for entry in exclude]
+        exclude = [entry for entry in exclude if os.path.exists(entry)]
+        exclude = [os.path.abspath(entry) for entry in exclude]
+        self.exclude_dirs = [entry.lower() for entry in exclude if os.path.isdir(entry)]
+        self.exclude_files = [entry.lower() for entry in exclude if os.path.isfile(entry)]
         self.max_directory_length = max_directory_length
         self.max_filename_length = max_filename_length
 
@@ -23,7 +25,7 @@ class NameFix(object):
                 self._rename(broken=os.path.join(root, os.path.join(root, directory)) + os.sep,
                              fixed=os.path.join(root, self._fix_dir(directory)) + os.sep)
             for file in files:
-                if file in self.exclude_files:
+                if file.lower() in self.exclude_files:
                     return
                 self._rename(broken=os.path.join(root, file),
                              fixed=os.path.join(root, self._fix_file(file)))
@@ -57,7 +59,7 @@ class NameFix(object):
     ) -> None:
         if broken == fixed:
             return
-        if any(broken.startswith(entry) for entry in self.exclude_dirs):
+        if any(broken.lower().startswith(entry) for entry in self.exclude_dirs):
             return
         print(f' BROKEN: "{broken}"\n    FIX: "{fixed}"')
         if os.path.exists(fixed):
@@ -72,7 +74,9 @@ class NameFix(object):
 def main() -> None:
     NameFix(
         root_directory='D:\\',
-        exclude=['$RECYCLE.BIN'],
+        exclude=['System Volume Information',
+                 '$Recycle.Bin',
+                 'RECYCLE?'],
         max_directory_length=255,
         max_filename_length=134
     ).run()

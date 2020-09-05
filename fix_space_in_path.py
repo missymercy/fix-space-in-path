@@ -21,7 +21,9 @@ def rename(
     if broken == fixed:
         return
     print(f' BROKEN: "{broken}"\n    FIX: "{fixed}"')
-    if input('Rename this? ') == 'y':
+    if os.path.exists(fixed):
+        print('Cannot fix, target already exists.')
+    elif input('Rename this? ') == 'y':
         os.rename(broken, fixed)
         print('Fixed.\n')
     else:

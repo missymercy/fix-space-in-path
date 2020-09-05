@@ -1,6 +1,8 @@
 import os
 
 RECURSIVE_FIX_DIRECTORY_NAMES_HERE = 'C:\\path'
+MAX_DIRECTORY_LENGTH = 255
+MAX_FILENAME_LENGTH = 143
 
 
 def main() -> None:
@@ -16,14 +18,23 @@ def main() -> None:
 def fix_file(
         name: str
 ) -> str:
+    # fix filename characters
     name, extension = os.path.splitext(name)
-    return name.strip(' ') + extension.strip(' ')
+    name = name.lstrip(' ').rstrip(' .')
+    # fix filename length
+    extension = extension.strip(' ')
+    max_length = MAX_FILENAME_LENGTH - len(extension)
+    name = name[:max_length]
+    # fix filename characters again
+    name = name.lstrip(' ').rstrip(' .')
+    # done
+    return name + extension
 
 
 def fix_dir(
         name: str
 ) -> str:
-    return name.strip(' ')
+    return name.strip(' ')[:MAX_DIRECTORY_LENGTH]
 
 
 def rename(

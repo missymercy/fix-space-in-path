@@ -7,11 +7,23 @@ def main() -> None:
     for root, directories, files in os.walk(RECURSIVE_FIX_DIRECTORY_NAMES_HERE):
         for directory in directories:
             rename(broken=os.path.join(root, directory) + os.sep,
-                   fixed=os.path.join(root, directory.strip(' ')) + os.sep)
+                   fixed=os.path.join(root, fix_dir(directory)) + os.sep)
         for file in files:
-            name, extension = os.path.splitext(file)
             rename(broken=os.path.join(root, file),
-                   fixed=os.path.join(root, name.strip(' ') + extension.strip(' ')))
+                   fixed=os.path.join(root, fix_file(file)))
+
+
+def fix_file(
+        name: str
+) -> str:
+    name, extension = os.path.splitext(name)
+    return name.strip(' ') + extension.strip(' ')
+
+
+def fix_dir(
+        name: str
+) -> str:
+    return name.strip(' ')
 
 
 def rename(

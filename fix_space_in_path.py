@@ -74,7 +74,7 @@ def main() -> None:
         root_directory='D:\\',
         exclude=['$RECYCLE.BIN'],
         max_directory_length=255,
-        max_filename_length=143
+        max_filename_length=134
     ).run()
 
 

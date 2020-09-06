@@ -36,13 +36,13 @@ class NameFix(object):
     ) -> str:
         # fix filename characters
         name, extension = os.path.splitext(name)
-        name = name.lstrip(' ').rstrip(' .')
+        name = name.strip(' ')
         # fix filename length
         extension = extension.strip(' ')
         max_length = self.max_filename_length - len(extension)
         name = name[:max_length]
         # fix filename characters again
-        name = name.lstrip(' ').rstrip(' .')
+        name = name.strip(' ')
         # done
         return name + extension
 

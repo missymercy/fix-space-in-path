@@ -1,5 +1,5 @@
 import os
-from typing import Iterable
+from typing import Iterable, Tuple, List
 
 
 class NameFix(object):
@@ -18,8 +18,11 @@ class NameFix(object):
         self.exclude_files = [entry.lower() for entry in exclude if os.path.isfile(entry)]
         self.max_directory_length = max_directory_length
         self.max_filename_length = max_filename_length
+        self.log: List[Tuple[str, str]] = []
 
     def run(self) -> None:
+        # rename things
+        self.log.clear()
         for root, directories, files in os.walk(self.root_directory):
             for directory in directories:
                 self._rename(broken=os.path.join(root, os.path.join(root, directory)) + os.sep,
@@ -29,6 +32,13 @@ class NameFix(object):
                     return
                 self._rename(broken=os.path.join(root, file),
                              fixed=os.path.join(root, self._fix_file(file)))
+        # print log
+        width = len(str(len(self.log)))
+        print('---- RENAME LOG BEGIN ----')
+        for index, (before, after) in enumerate(self.log):
+            print(f' {str(index + 1).rjust(width)} | BEFORE | "{before}"')
+            print(f' {str().rjust(width)} | AFTER  | "{after}"')
+        print('---- RENAME LOG END ----')
 
     def _fix_file(
             self,
@@ -66,6 +76,7 @@ class NameFix(object):
             print('Cannot fix, target already exists.')
         elif input('Rename this? ') == 'y':
             os.rename(broken, fixed)
+            self.log.append((broken, fixed))
             print('Fixed.\n')
         else:
             print('Not fixed.\n')
